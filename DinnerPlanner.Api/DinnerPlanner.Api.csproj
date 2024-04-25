@@ -11,10 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Controllers\Auth\"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\DinnerPlanner.Application\DinnerPlanner.Application.csproj"/>
         <ProjectReference Include="..\DinnerPlanner.Contracts\DinnerPlanner.Contracts.csproj"/>
         <ProjectReference Include="..\DinnerPlanner.Infrastructure\DinnerPlanner.Infrastructure.csproj"/>

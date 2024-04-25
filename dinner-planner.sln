@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DinnerPlanner.Api", "Dinner
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DinnerPlanner.Contracts", "DinnerPlanner.Contracts\DinnerPlanner.Contracts.csproj", "{73BE307D-3BAE-4ADF-A01A-09829B3FD40E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{5D342F92-61CD-4622-B5FA-E4134A523C7D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{5D342F92-61CD-4622-B5FA-E4134A523C7D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DinnerPlanner.Infrastructure", "DinnerPlanner.Infrastructure\DinnerPlanner.Infrastructure.csproj", "{A1416913-CF52-4B96-879B-2AA8E05776BC}"
 EndProject
