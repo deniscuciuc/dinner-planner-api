@@ -1,6 +1,8 @@
-﻿namespace DinnerPlanner.Application.Common.Interfaces.Authentication;
+﻿using DinnerPlanner.Domain.Entities;
+
+namespace DinnerPlanner.Application.Common.Interfaces.Authentication;
 
 public interface IJwtTokenGenerator
 {
-    string GenerateToken(Guid userId, string firstName, string lastName);
+    string GenerateToken(User user);
 }

@@ -1,6 +1,8 @@
 ﻿using DinnerPlanner.Application.Common.Interfaces.Authentication;
+using DinnerPlanner.Application.Common.Interfaces.Persistence;
 using DinnerPlanner.Application.Common.Interfaces.Services;
 using DinnerPlanner.Infrastructure.Authentication;
+using DinnerPlanner.Infrastructure.Persistence;
 using DinnerPlanner.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +19,8 @@ public static class DependencyInjection
 
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
+        services.AddScoped<IUserRepository, UserRepository>();
 
         return services;
     }

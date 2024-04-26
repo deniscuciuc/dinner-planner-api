@@ -7,25 +7,26 @@ namespace DinnerPlanner.Api.Controllers.Authentication;
 
 [ApiController]
 [Route("auth")]
-public class AuthenticationController(IAuthenticationService authenticationService) : ControllerBase
+public class AuthenticationController : ControllerBase
 {
+    private readonly IAuthenticationService _authenticationService;
+
+    public AuthenticationController(IAuthenticationService authenticationService)
+    {
+        _authenticationService = authenticationService;
+    }
+
     [HttpPost("register")]
     public IActionResult Register(RegisterRequest request)
     {
-        var authResult = authenticationService.Register(
+        var authResult = _authenticationService.Register(
             request.FirstName,
             request.LastName,
             request.Email,
             request.Password
         );
 
-        var response = new AuthenticationResponse(
-            FirstName: authResult.FirstName,
-            LastName: authResult.LastName,
-            Email: authResult.Email,
-            Id: authResult.Id,
-            Token: authResult.Token
-        );
+        var response = MapAuthResultToResponse(authResult);
 
         return Ok(response);
     }
@@ -33,6 +34,21 @@ public class AuthenticationController(IAuthenticationService authenticationServi
     [HttpPost("login")]
     public IActionResult Login(LoginRequest request)
     {
-        return Ok(request);
+        var authResult = _authenticationService.Login(request.Email, request.Password);
+
+        var response = MapAuthResultToResponse(authResult);
+
+        return Ok(response);
+    }
+
+    private AuthenticationResponse MapAuthResultToResponse(AuthenticationResult authResult)
+    {
+        return new AuthenticationResponse(
+            FirstName: authResult.User.FirstName,
+            LastName: authResult.User.LastName,
+            Email: authResult.User.Email,
+            Id: authResult.User.Id,
+            Token: authResult.Token
+        );
     }
 }

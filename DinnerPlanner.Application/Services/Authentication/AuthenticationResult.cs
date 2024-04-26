@@ -1,8 +1,7 @@
-﻿namespace DinnerPlanner.Application.Services.Authentication;
+﻿using DinnerPlanner.Domain.Entities;
+
+namespace DinnerPlanner.Application.Services.Authentication;
 
 public record AuthenticationResult(
-    Guid Id,
-    string FirstName,
-    string LastName,
-    string Email,
+    User User,
     string Token);
