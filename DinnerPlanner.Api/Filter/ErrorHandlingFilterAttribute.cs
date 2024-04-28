@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace DinnerPlanner.Api.Filter;
@@ -9,10 +10,15 @@ public class ErrorHandlingFilterAttribute : ExceptionFilterAttribute
     {
         var exception = context.Exception;
 
-        context.Result = new ObjectResult(new { error = "An error occurred while processing your request" })
+        var problemDetails = new ProblemDetails
         {
-            StatusCode = 500
+            Title = "An error occurred while processing your request",
+            Instance = context.HttpContext.Request.Path,
+            Status = (int)HttpStatusCode.InternalServerError,
+            Detail = exception.Message
         };
+
+        context.Result = new ObjectResult(problemDetails);
 
         context.ExceptionHandled = true;
     }
