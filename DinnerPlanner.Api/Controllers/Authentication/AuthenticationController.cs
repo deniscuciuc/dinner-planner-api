@@ -19,26 +19,28 @@ public class AuthenticationController : ControllerBase
     [HttpPost("register")]
     public IActionResult Register(RegisterRequest request)
     {
-        var authResult = _authenticationService.Register(
+        var registerResult = _authenticationService.Register(
             request.FirstName,
             request.LastName,
             request.Email,
             request.Password
         );
 
-        var response = MapAuthResultToResponse(authResult);
-
-        return Ok(response);
+        return registerResult.Match(
+            authResult => Ok(MapAuthResultToResponse(authResult)),
+            _ => Problem(statusCode: StatusCodes.Status409Conflict, title: "Email already in use")
+        );
     }
 
     [HttpPost("login")]
     public IActionResult Login(LoginRequest request)
     {
-        var authResult = _authenticationService.Login(request.Email, request.Password);
+        var loginResult = _authenticationService.Login(request.Email, request.Password);
 
-        var response = MapAuthResultToResponse(authResult);
-
-        return Ok(response);
+        return loginResult.Match(
+            authResult => Ok(MapAuthResultToResponse(authResult)),
+            _ => Problem(statusCode: StatusCodes.Status409Conflict, title: "Invalid Password")
+        );
     }
 
     private AuthenticationResponse MapAuthResultToResponse(AuthenticationResult authResult)
