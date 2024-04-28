@@ -5,8 +5,8 @@ namespace DinnerPlanner.Application.Services.Authentication;
 
 public interface IAuthenticationService
 {
-    OneOf<AuthenticationResult, DuplicateEmailError> Register(string firstName, string lastName, string email,
+    OneOf<AuthenticationResult, IError> Register(string firstName, string lastName, string email,
         string password);
 
-    OneOf<AuthenticationResult, InvalidPasswordError> Login(string email, string password);
+    OneOf<AuthenticationResult, IError> Login(string email, string password);
 }

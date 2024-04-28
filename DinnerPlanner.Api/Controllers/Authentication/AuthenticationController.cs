@@ -28,7 +28,7 @@ public class AuthenticationController : ControllerBase
 
         return registerResult.Match(
             authResult => Ok(MapAuthResultToResponse(authResult)),
-            _ => Problem(statusCode: StatusCodes.Status409Conflict, title: "Email already in use")
+            errorResult => Problem(errorResult.ErrorMessage, statusCode: (int)errorResult.StatusCode)
         );
     }
 
@@ -39,7 +39,7 @@ public class AuthenticationController : ControllerBase
 
         return loginResult.Match(
             authResult => Ok(MapAuthResultToResponse(authResult)),
-            _ => Problem(statusCode: StatusCodes.Status409Conflict, title: "Invalid Password")
+            errorResult => Problem(errorResult.ErrorMessage, statusCode: (int)errorResult.StatusCode)
         );
     }
 

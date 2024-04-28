@@ -17,7 +17,7 @@ public class AuthenticationService : IAuthenticationService
         _userRepository = userRepository;
     }
 
-    public OneOf<AuthenticationResult, DuplicateEmailError> Register(string firstName, string lastName, string email,
+    public OneOf<AuthenticationResult, IError> Register(string firstName, string lastName, string email,
         string password)
     {
         // Check if already exists
@@ -44,18 +44,20 @@ public class AuthenticationService : IAuthenticationService
         return new AuthenticationResult(user, token);
     }
 
-    public OneOf<AuthenticationResult, InvalidPasswordError> Login(string email, string password)
+    public OneOf<AuthenticationResult, IError> Login(string email, string password)
     {
         // Find if exists, if not throw error
         var user = _userRepository.GetUserByEmail(email);
         if (user is null)
         {
+            return new UserByEmailNotFoundError();
         }
 
 
         // Validate password
         if (user.Password != password)
         {
+            return new InvalidPasswordError();
         }
 
 
