@@ -1,4 +1,5 @@
-﻿using DinnerPlanner.Application.Common.Interfaces.Authentication;
+﻿using DinnerPlanner.Application.Common.Errors;
+using DinnerPlanner.Application.Common.Interfaces.Authentication;
 using DinnerPlanner.Application.Common.Interfaces.Persistence;
 using DinnerPlanner.Domain.Entities;
 
@@ -45,11 +46,11 @@ public class AuthenticationService : IAuthenticationService
     {
         // Find if exists, if not throw error
         var user = _userRepository.GetUserByEmail(email);
-        if (user is null) throw new Exception("User with given email not found");
+        if (user is null) throw new DuplicateEmailException();
 
 
         // Validate password
-        if (user.Password != password) throw new Exception("Invalid password");
+        if (user.Password != password) throw new InvalidPasswordException();
 
 
         // Create JWT token
