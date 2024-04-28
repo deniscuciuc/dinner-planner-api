@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
 
-namespace DinnerPlanner.Api.Middleware;
+namespace DinnerPlanner.Api.Common.Error;
 
 public class ErrorHandlingMiddleware
 {

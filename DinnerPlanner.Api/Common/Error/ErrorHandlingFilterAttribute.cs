@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace DinnerPlanner.Api.Filter;
+namespace DinnerPlanner.Api.Common.Error;
 
 public class ErrorHandlingFilterAttribute : ExceptionFilterAttribute
 {

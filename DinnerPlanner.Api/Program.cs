@@ -1,4 +1,4 @@
-using DinnerPlanner.Api.Filter;
+using DinnerPlanner.Api.Common.Error;
 using DinnerPlanner.Application;
 using DinnerPlanner.Infrastructure;
 
@@ -13,7 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
 {
-    // app.UseMiddleware<ErrorHandlingMiddleware>();
     app.UseExceptionHandler("/error");
     app.UseHttpsRedirection();
     app.UseAuthorization();

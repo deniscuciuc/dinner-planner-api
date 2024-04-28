@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace DinnerPlanner.Api.Controllers;
+namespace DinnerPlanner.Api.Common.Error;
 
 public class ErrorsController : ControllerBase
 {
