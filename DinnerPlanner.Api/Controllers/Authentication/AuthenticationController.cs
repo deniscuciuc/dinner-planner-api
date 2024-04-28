@@ -1,4 +1,5 @@
-﻿using DinnerPlanner.Application.Services.Authentication;
+﻿using DinnerPlanner.Application.Common.Errors.Authentication;
+using DinnerPlanner.Application.Services.Authentication;
 using DinnerPlanner.Contracts.Authentication.Requests;
 using DinnerPlanner.Contracts.Authentication.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -26,10 +27,14 @@ public class AuthenticationController : ControllerBase
             request.Password
         );
 
-        return registerResult.Match(
-            authResult => Ok(MapAuthResultToResponse(authResult)),
-            errorResult => Problem(errorResult.ErrorMessage, statusCode: (int)errorResult.StatusCode)
-        );
+        if (registerResult.IsSuccess) return Ok(MapAuthResultToResponse(registerResult.Value));
+
+        var errors = registerResult.Errors;
+
+        if (errors[0] is DuplicateEmailError)
+            return Problem(statusCode: StatusCodes.Status409Conflict, detail: "Email already in use");
+
+        return Problem();
     }
 
     [HttpPost("login")]
@@ -37,10 +42,17 @@ public class AuthenticationController : ControllerBase
     {
         var loginResult = _authenticationService.Login(request.Email, request.Password);
 
-        return loginResult.Match(
-            authResult => Ok(MapAuthResultToResponse(authResult)),
-            errorResult => Problem(errorResult.ErrorMessage, statusCode: (int)errorResult.StatusCode)
-        );
+        if (loginResult.IsSuccess) return Ok(MapAuthResultToResponse(loginResult.Value));
+
+        var errors = loginResult.Errors;
+
+        if (errors[0] is UserByEmailNotFoundError)
+            return Problem(statusCode: StatusCodes.Status404NotFound, detail: "User with given email not found");
+
+        if (errors[1] is InvalidPasswordError)
+            return Problem(statusCode: StatusCodes.Status403Forbidden, detail: "Given password is incorrect");
+
+        return Problem();
     }
 
     private AuthenticationResponse MapAuthResultToResponse(AuthenticationResult authResult)

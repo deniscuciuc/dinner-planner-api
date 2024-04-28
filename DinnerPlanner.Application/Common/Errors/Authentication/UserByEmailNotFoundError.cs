@@ -1,9 +1,10 @@
-﻿using System.Net;
+﻿using FluentResults;
 
-namespace DinnerPlanner.Application.Common.Errors;
+namespace DinnerPlanner.Application.Common.Errors.Authentication;
 
-public struct UserByEmailNotFoundError : IError
+public class UserByEmailNotFoundError : IError
 {
-    public HttpStatusCode StatusCode => HttpStatusCode.NotFound;
-    public string ErrorMessage => "User not found by given email";
+    public string Message { get; }
+    public Dictionary<string, object> Metadata { get; }
+    public List<IError> Reasons { get; }
 }

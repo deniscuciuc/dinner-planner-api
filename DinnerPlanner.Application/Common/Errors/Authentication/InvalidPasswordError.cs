@@ -1,9 +1,10 @@
-﻿using System.Net;
+﻿using FluentResults;
 
-namespace DinnerPlanner.Application.Common.Errors;
+namespace DinnerPlanner.Application.Common.Errors.Authentication;
 
-public struct InvalidPasswordError : IError
+public class InvalidPasswordError : IError
 {
-    public HttpStatusCode StatusCode => HttpStatusCode.Forbidden;
-    public string ErrorMessage => "Invalid password";
+    public string Message { get; }
+    public Dictionary<string, object> Metadata { get; }
+    public List<IError> Reasons { get; }
 }

@@ -1,9 +1,10 @@
-﻿using System.Net;
+﻿using FluentResults;
 
-namespace DinnerPlanner.Application.Common.Errors;
+namespace DinnerPlanner.Application.Common.Errors.Authentication;
 
-public struct DuplicateEmailError : IError
+public class DuplicateEmailError : IError
 {
-    public HttpStatusCode StatusCode => HttpStatusCode.Conflict;
-    public string ErrorMessage => "Given email is already in use";
+    public string Message { get; }
+    public Dictionary<string, object> Metadata { get; }
+    public List<IError> Reasons { get; }
 }

@@ -1,8 +1,8 @@
-﻿using DinnerPlanner.Application.Common.Errors;
+﻿using DinnerPlanner.Application.Common.Errors.Authentication;
 using DinnerPlanner.Application.Common.Interfaces.Authentication;
 using DinnerPlanner.Application.Common.Interfaces.Persistence;
 using DinnerPlanner.Domain.Entities;
-using OneOf;
+using FluentResults;
 
 namespace DinnerPlanner.Application.Services.Authentication;
 
@@ -17,12 +17,12 @@ public class AuthenticationService : IAuthenticationService
         _userRepository = userRepository;
     }
 
-    public OneOf<AuthenticationResult, IError> Register(string firstName, string lastName, string email,
+    public Result<AuthenticationResult> Register(string firstName, string lastName, string email,
         string password)
     {
         // Check if already exists
         var userByEmail = _userRepository.GetUserByEmail(email);
-        if (userByEmail is not null) return new DuplicateEmailError();
+        if (userByEmail is not null) return Result.Fail<AuthenticationResult>(new DuplicateEmailError());
 
 
         // Create user and save in DB
@@ -44,20 +44,20 @@ public class AuthenticationService : IAuthenticationService
         return new AuthenticationResult(user, token);
     }
 
-    public OneOf<AuthenticationResult, IError> Login(string email, string password)
+    public Result<AuthenticationResult> Login(string email, string password)
     {
-        // Find if exists, if not throw error
+        // Find if exists, if not return error
         var user = _userRepository.GetUserByEmail(email);
         if (user is null)
         {
-            return new UserByEmailNotFoundError();
+            return Result.Fail<AuthenticationResult>(new UserByEmailNotFoundError());
         }
 
 
         // Validate password
         if (user.Password != password)
         {
-            return new InvalidPasswordError();
+            return Result.Fail<AuthenticationResult>(new InvalidPasswordError());
         }
 
 
