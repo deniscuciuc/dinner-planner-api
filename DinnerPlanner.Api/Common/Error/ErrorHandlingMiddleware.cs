@@ -3,6 +3,7 @@ using System.Text.Json;
 
 namespace DinnerPlanner.Api.Common.Error;
 
+// Currently not in use (just for example as not best practice)
 public class ErrorHandlingMiddleware
 {
     private readonly RequestDelegate _next;

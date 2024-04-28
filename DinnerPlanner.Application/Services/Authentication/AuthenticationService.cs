@@ -20,7 +20,7 @@ public class AuthenticationService : IAuthenticationService
     {
         // Check if already exists
         var userByEmail = _userRepository.GetUserByEmail(email);
-        if (userByEmail is not null) throw new Exception("User with given email already exists");
+        if (userByEmail is not null) throw new DuplicateEmailException();
 
 
         // Create user and save in DB
@@ -46,7 +46,7 @@ public class AuthenticationService : IAuthenticationService
     {
         // Find if exists, if not throw error
         var user = _userRepository.GetUserByEmail(email);
-        if (user is null) throw new DuplicateEmailException();
+        if (user is null) throw new UserByEmailNotFoundException();
 
 
         // Validate password

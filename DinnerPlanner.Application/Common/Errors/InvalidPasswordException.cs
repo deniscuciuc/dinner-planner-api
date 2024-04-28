@@ -1,5 +1,9 @@
-﻿namespace DinnerPlanner.Application.Common.Errors;
+﻿using System.Net;
 
-public class InvalidPasswordException : Exception
+namespace DinnerPlanner.Application.Common.Errors;
+
+public class InvalidPasswordException : Exception, IServiceException
 {
+    public HttpStatusCode StatusCode => HttpStatusCode.Conflict;
+    public string? ErrorMessage => "Invalid password";
 }
