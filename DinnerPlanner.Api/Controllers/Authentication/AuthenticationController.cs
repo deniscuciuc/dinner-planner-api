@@ -1,14 +1,13 @@
-﻿using DinnerPlanner.Application.Common.Errors.Authentication;
-using DinnerPlanner.Application.Services.Authentication;
+﻿using DinnerPlanner.Application.Services.Authentication;
 using DinnerPlanner.Contracts.Authentication.Requests;
 using DinnerPlanner.Contracts.Authentication.Responses;
+using DinnerPlanner.Domain.Common.Errors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DinnerPlanner.Api.Controllers.Authentication;
 
-[ApiController]
 [Route("auth")]
-public class AuthenticationController : ControllerBase
+public class AuthenticationController : ApiController
 {
     private readonly IAuthenticationService _authenticationService;
 
@@ -27,14 +26,10 @@ public class AuthenticationController : ControllerBase
             request.Password
         );
 
-        if (registerResult.IsSuccess) return Ok(MapAuthResultToResponse(registerResult.Value));
-
-        var errors = registerResult.Errors;
-
-        if (errors[0] is DuplicateEmailError)
-            return Problem(statusCode: StatusCodes.Status409Conflict, detail: "Email already in use");
-
-        return Problem();
+        return registerResult.Match(
+            authResult => Ok(MapAuthResultToResponse(authResult)),
+            Problem
+        );
     }
 
     [HttpPost("login")]
@@ -42,17 +37,17 @@ public class AuthenticationController : ControllerBase
     {
         var loginResult = _authenticationService.Login(request.Email, request.Password);
 
-        if (loginResult.IsSuccess) return Ok(MapAuthResultToResponse(loginResult.Value));
+        if (loginResult.IsError && loginResult.FirstError == Errors.Authentication.InvalidPassword)
+            // TODO: fix in future (no code of error)
+            return Problem(
+                statusCode: StatusCodes.Status401Unauthorized,
+                title: loginResult.FirstError.Description
+            );
 
-        var errors = loginResult.Errors;
-
-        if (errors[0] is UserByEmailNotFoundError)
-            return Problem(statusCode: StatusCodes.Status404NotFound, detail: "User with given email not found");
-
-        if (errors[1] is InvalidPasswordError)
-            return Problem(statusCode: StatusCodes.Status403Forbidden, detail: "Given password is incorrect");
-
-        return Problem();
+        return loginResult.Match(
+            authResult => Ok(MapAuthResultToResponse(authResult)),
+            Problem
+        );
     }
 
     private AuthenticationResponse MapAuthResultToResponse(AuthenticationResult authResult)
