@@ -1,6 +1,6 @@
 ﻿using DinnerPlanner.Domain.Entities;
 
-namespace DinnerPlanner.Application.Services.Authentication.Common;
+namespace DinnerPlanner.Application.Authentication.Results;
 
 public record AuthenticationResult(
     User User,

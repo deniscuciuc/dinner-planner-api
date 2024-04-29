@@ -1,32 +1,33 @@
-﻿using DinnerPlanner.Application.Common.Interfaces.Authentication;
+﻿using DinnerPlanner.Application.Authentication.Results;
+using DinnerPlanner.Application.Common.Interfaces.Authentication;
 using DinnerPlanner.Application.Common.Interfaces.Persistence;
-using DinnerPlanner.Application.Services.Authentication.Common;
 using DinnerPlanner.Domain.Common.Errors;
 using DinnerPlanner.Domain.Entities;
 using ErrorOr;
+using MediatR;
 
-namespace DinnerPlanner.Application.Services.Authentication.Queries;
+namespace DinnerPlanner.Application.Authentication.Queries.Login;
 
-public class AuthenticationQueryService : IAuthenticationQueryService
+public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<AuthenticationResult>>
 {
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly IUserRepository _userRepository;
 
-    public AuthenticationQueryService(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator)
+    public LoginQueryHandler(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator)
     {
         _userRepository = userRepository;
         _jwtTokenGenerator = jwtTokenGenerator;
     }
 
-    public ErrorOr<AuthenticationResult> Login(string email, string password)
+    public async Task<ErrorOr<AuthenticationResult>> Handle(LoginQuery query, CancellationToken cancellationToken)
     {
         // Find if exists, if not return error
-        var user = _userRepository.GetUserByEmail(email);
+        var user = _userRepository.GetUserByEmail(query.Email);
         if (user is null) return Errors.Authentication.UserNotFound;
 
 
         // Validate password
-        if (user.Password != password) return Errors.Authentication.InvalidPassword;
+        if (user.Password != query.Password) return Errors.Authentication.InvalidPassword;
 
 
         // Create JWT token

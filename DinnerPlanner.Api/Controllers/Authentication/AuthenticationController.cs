@@ -1,9 +1,10 @@
-﻿using DinnerPlanner.Application.Services.Authentication.Commands;
-using DinnerPlanner.Application.Services.Authentication.Common;
-using DinnerPlanner.Application.Services.Authentication.Queries;
+﻿using DinnerPlanner.Application.Authentication.Commands.Register;
+using DinnerPlanner.Application.Authentication.Queries.Login;
+using DinnerPlanner.Application.Authentication.Results;
 using DinnerPlanner.Contracts.Authentication.Requests;
 using DinnerPlanner.Contracts.Authentication.Responses;
 using DinnerPlanner.Domain.Common.Errors;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DinnerPlanner.Api.Controllers.Authentication;
@@ -11,25 +12,24 @@ namespace DinnerPlanner.Api.Controllers.Authentication;
 [Route("auth")]
 public class AuthenticationController : ApiController
 {
-    private readonly IAuthenticationCommandService _authenticationCommandService;
-    private readonly IAuthenticationQueryService _authenticationQueryService;
+    private readonly ISender _sender;
 
-    public AuthenticationController(IAuthenticationCommandService authenticationCommandService,
-        IAuthenticationQueryService authenticationQueryService)
+    public AuthenticationController(ISender sender)
     {
-        _authenticationCommandService = authenticationCommandService;
-        _authenticationQueryService = authenticationQueryService;
+        _sender = sender;
     }
 
     [HttpPost("register")]
-    public IActionResult Register(RegisterRequest request)
+    public async Task<IActionResult> Register(RegisterRequest request)
     {
-        var registerResult = _authenticationCommandService.Register(
+        var command = new RegisterCommand(
             request.FirstName,
             request.LastName,
             request.Email,
             request.Password
         );
+
+        var registerResult = await _sender.Send(command);
 
         return registerResult.Match(
             authResult => Ok(MapAuthResultToResponse(authResult)),
@@ -38,9 +38,11 @@ public class AuthenticationController : ApiController
     }
 
     [HttpPost("login")]
-    public IActionResult Login(LoginRequest request)
+    public async Task<IActionResult> Login(LoginRequest request)
     {
-        var loginResult = _authenticationQueryService.Login(request.Email, request.Password);
+        var query = new LoginQuery(request.Email, request.Password);
+        var loginResult = await _sender.Send(query);
+
 
         if (loginResult.IsError && loginResult.FirstError == Errors.Authentication.InvalidPassword)
             // TODO: fix in future (no code of error)
