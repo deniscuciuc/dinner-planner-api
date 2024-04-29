@@ -1,4 +1,6 @@
-﻿using DinnerPlanner.Application.Services.Authentication;
+﻿using DinnerPlanner.Application.Services.Authentication.Commands;
+using DinnerPlanner.Application.Services.Authentication.Common;
+using DinnerPlanner.Application.Services.Authentication.Queries;
 using DinnerPlanner.Contracts.Authentication.Requests;
 using DinnerPlanner.Contracts.Authentication.Responses;
 using DinnerPlanner.Domain.Common.Errors;
@@ -9,17 +11,20 @@ namespace DinnerPlanner.Api.Controllers.Authentication;
 [Route("auth")]
 public class AuthenticationController : ApiController
 {
-    private readonly IAuthenticationService _authenticationService;
+    private readonly IAuthenticationCommandService _authenticationCommandService;
+    private readonly IAuthenticationQueryService _authenticationQueryService;
 
-    public AuthenticationController(IAuthenticationService authenticationService)
+    public AuthenticationController(IAuthenticationCommandService authenticationCommandService,
+        IAuthenticationQueryService authenticationQueryService)
     {
-        _authenticationService = authenticationService;
+        _authenticationCommandService = authenticationCommandService;
+        _authenticationQueryService = authenticationQueryService;
     }
 
     [HttpPost("register")]
     public IActionResult Register(RegisterRequest request)
     {
-        var registerResult = _authenticationService.Register(
+        var registerResult = _authenticationCommandService.Register(
             request.FirstName,
             request.LastName,
             request.Email,
@@ -35,7 +40,7 @@ public class AuthenticationController : ApiController
     [HttpPost("login")]
     public IActionResult Login(LoginRequest request)
     {
-        var loginResult = _authenticationService.Login(request.Email, request.Password);
+        var loginResult = _authenticationQueryService.Login(request.Email, request.Password);
 
         if (loginResult.IsError && loginResult.FirstError == Errors.Authentication.InvalidPassword)
             // TODO: fix in future (no code of error)

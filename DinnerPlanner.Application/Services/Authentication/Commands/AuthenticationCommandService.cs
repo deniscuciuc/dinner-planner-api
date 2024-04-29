@@ -1,17 +1,18 @@
 ﻿using DinnerPlanner.Application.Common.Interfaces.Authentication;
 using DinnerPlanner.Application.Common.Interfaces.Persistence;
+using DinnerPlanner.Application.Services.Authentication.Common;
 using DinnerPlanner.Domain.Common.Errors;
 using DinnerPlanner.Domain.Entities;
 using ErrorOr;
 
-namespace DinnerPlanner.Application.Services.Authentication;
+namespace DinnerPlanner.Application.Services.Authentication.Commands;
 
-public class AuthenticationService : IAuthenticationService
+public class AuthenticationCommandService : IAuthenticationCommandService
 {
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly IUserRepository _userRepository;
 
-    public AuthenticationService(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository)
+    public AuthenticationCommandService(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository)
     {
         _jwtTokenGenerator = jwtTokenGenerator;
         _userRepository = userRepository;
@@ -36,30 +37,6 @@ public class AuthenticationService : IAuthenticationService
         };
 
         _userRepository.AddUser(user);
-
-
-        // Create JWT token
-        var token = GenerateToken(user);
-
-
-        return new AuthenticationResult(user, token);
-    }
-
-    public ErrorOr<AuthenticationResult> Login(string email, string password)
-    {
-        // Find if exists, if not return error
-        var user = _userRepository.GetUserByEmail(email);
-        if (user is null)
-        {
-            return Errors.Authentication.UserNotFound;
-        }
-
-
-        // Validate password
-        if (user.Password != password)
-        {
-            return Errors.Authentication.InvalidPassword;
-        }
 
 
         // Create JWT token
