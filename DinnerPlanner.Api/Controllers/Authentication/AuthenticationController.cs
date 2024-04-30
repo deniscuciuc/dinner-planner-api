@@ -1,9 +1,9 @@
 ﻿using DinnerPlanner.Application.Authentication.Commands.Register;
 using DinnerPlanner.Application.Authentication.Queries.Login;
-using DinnerPlanner.Application.Authentication.Results;
 using DinnerPlanner.Contracts.Authentication.Requests;
 using DinnerPlanner.Contracts.Authentication.Responses;
 using DinnerPlanner.Domain.Common.Errors;
+using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +14,7 @@ public class AuthenticationController : ApiController
 {
     private readonly ISender _sender;
 
-    public AuthenticationController(ISender sender)
+    public AuthenticationController(ISender sender, IMapper mapper) : base(mapper)
     {
         _sender = sender;
     }
@@ -22,17 +22,12 @@ public class AuthenticationController : ApiController
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
-        var command = new RegisterCommand(
-            request.FirstName,
-            request.LastName,
-            request.Email,
-            request.Password
-        );
+        var command = _mapper.Map<RegisterCommand>(request);
 
         var registerResult = await _sender.Send(command);
 
         return registerResult.Match(
-            authResult => Ok(MapAuthResultToResponse(authResult)),
+            authResult => Ok(_mapper.Map<AuthenticationResponse>(authResult)),
             Problem
         );
     }
@@ -40,7 +35,7 @@ public class AuthenticationController : ApiController
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequest request)
     {
-        var query = new LoginQuery(request.Email, request.Password);
+        var query = _mapper.Map<LoginQuery>(request);
         var loginResult = await _sender.Send(query);
 
 
@@ -52,19 +47,8 @@ public class AuthenticationController : ApiController
             );
 
         return loginResult.Match(
-            authResult => Ok(MapAuthResultToResponse(authResult)),
+            authResult => Ok(_mapper.Map<AuthenticationResponse>(authResult)),
             Problem
-        );
-    }
-
-    private AuthenticationResponse MapAuthResultToResponse(AuthenticationResult authResult)
-    {
-        return new AuthenticationResponse(
-            FirstName: authResult.User.FirstName,
-            LastName: authResult.User.LastName,
-            Email: authResult.User.Email,
-            Id: authResult.User.Id,
-            Token: authResult.Token
         );
     }
 }

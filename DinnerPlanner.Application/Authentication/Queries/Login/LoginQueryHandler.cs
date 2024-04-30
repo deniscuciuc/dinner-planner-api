@@ -21,6 +21,8 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<Authenticat
 
     public async Task<ErrorOr<AuthenticationResult>> Handle(LoginQuery query, CancellationToken cancellationToken)
     {
+        await Task.CompletedTask;
+
         // Find if exists, if not return error    
         var user = _userRepository.GetUserByEmail(query.Email);
         if (user is null) return Errors.Authentication.UserNotFoundByEmail;

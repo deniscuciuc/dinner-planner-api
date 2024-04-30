@@ -1,5 +1,6 @@
 ﻿using DinnerPlanner.Api.Common.Http;
 using ErrorOr;
+using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DinnerPlanner.Api.Controllers;
@@ -8,6 +9,13 @@ namespace DinnerPlanner.Api.Controllers;
 [Route("")]
 public class ApiController : ControllerBase
 {
+    protected readonly IMapper _mapper;
+
+    public ApiController(IMapper mapper)
+    {
+        _mapper = mapper;
+    }
+
     public IActionResult Problem(List<Error> errors)
     {
         HttpContext.Items[HttpContextItemKeys.Errors] = errors;
