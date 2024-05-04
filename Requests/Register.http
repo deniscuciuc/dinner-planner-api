@@ -3,8 +3,8 @@ POST http://localhost:5155/auth/register
 Content-Type: application/json
 
 {
-  "FirstName": "John",
-  "LastName": "Doe",
+  "FirstName": "",
+  "LastName": "",
   "Email": "john.doe@gmai.com",
   "Password": "password"
 }

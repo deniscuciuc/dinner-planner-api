@@ -12,22 +12,19 @@ namespace DinnerPlanner.Api.Controllers.Authentication;
 [Route("auth")]
 public class AuthenticationController : ApiController
 {
-    private readonly ISender _sender;
-
-    public AuthenticationController(ISender sender, IMapper mapper) : base(mapper)
+    public AuthenticationController(ISender sender, IMapper mapper) : base(sender, mapper)
     {
-        _sender = sender;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
-        var command = _mapper.Map<RegisterCommand>(request);
+        var command = Mapper.Map<RegisterCommand>(request);
 
-        var registerResult = await _sender.Send(command);
+        var registerResult = await Sender.Send(command);
 
         return registerResult.Match(
-            authResult => Ok(_mapper.Map<AuthenticationResponse>(authResult)),
+            authResult => Ok(Mapper.Map<AuthenticationResponse>(authResult)),
             Problem
         );
     }
@@ -35,8 +32,8 @@ public class AuthenticationController : ApiController
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequest request)
     {
-        var query = _mapper.Map<LoginQuery>(request);
-        var loginResult = await _sender.Send(query);
+        var query = Mapper.Map<LoginQuery>(request);
+        var loginResult = await Sender.Send(query);
 
 
         if (loginResult.IsError && loginResult.FirstError == Errors.Authentication.InvalidPassword)
@@ -47,7 +44,7 @@ public class AuthenticationController : ApiController
             );
 
         return loginResult.Match(
-            authResult => Ok(_mapper.Map<AuthenticationResponse>(authResult)),
+            authResult => Ok(Mapper.Map<AuthenticationResponse>(authResult)),
             Problem
         );
     }

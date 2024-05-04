@@ -18,4 +18,9 @@ public class UserRepository : IUserRepository
     {
         Users.Add(user);
     }
+
+    public bool ExistsByEmail(string email)
+    {
+        return Users.Exists(u => u.Email == email);
+    }
 }

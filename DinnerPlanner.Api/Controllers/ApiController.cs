@@ -1,28 +1,42 @@
 ﻿using DinnerPlanner.Api.Common.Http;
 using ErrorOr;
 using MapsterMapper;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.IdentityModel.Tokens;
 
 namespace DinnerPlanner.Api.Controllers;
 
 [ApiController]
 [Route("")]
-public class ApiController : ControllerBase
+public abstract class ApiController : ControllerBase
 {
-    protected readonly IMapper _mapper;
+    protected readonly IMapper Mapper;
+    protected readonly ISender Sender;
 
-    public ApiController(IMapper mapper)
+    protected ApiController(ISender sender, IMapper mapper)
     {
-        _mapper = mapper;
+        Sender = sender;
+        Mapper = mapper;
     }
 
-    public IActionResult Problem(List<Error> errors)
+    protected IActionResult Problem(List<Error> errors)
     {
+        if (errors.IsNullOrEmpty()) return Problem();
+
+        if (errors.All(error => error.Type == ErrorType.Validation)) return ValidationProblem(errors);
+
         HttpContext.Items[HttpContextItemKeys.Errors] = errors;
 
         var firstError = errors.First();
 
-        var statusCode = firstError.Type switch
+        return Problem(firstError);
+    }
+
+    private IActionResult Problem(Error error)
+    {
+        var statusCode = error.Type switch
         {
             ErrorType.Conflict => StatusCodes.Status409Conflict,
             ErrorType.Validation => StatusCodes.Status400BadRequest,
@@ -30,6 +44,15 @@ public class ApiController : ControllerBase
             _ => StatusCodes.Status500InternalServerError
         };
 
-        return Problem(statusCode: statusCode, title: firstError.Description);
+        return Problem(statusCode: statusCode, title: error.Description);
+    }
+
+    private IActionResult ValidationProblem(List<Error> errors)
+    {
+        var modelStateDictionary = new ModelStateDictionary();
+
+        foreach (var error in errors) modelStateDictionary.AddModelError(error.Code, error.Description);
+
+        return ValidationProblem(modelStateDictionary);
     }
 }

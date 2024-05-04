@@ -24,10 +24,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<A
     {
         await Task.CompletedTask;
 
-        // Check if already exists
-        var userByEmail = _userRepository.GetUserByEmail(command.Email);
-
-        if (userByEmail is not null) return Errors.User.DuplicateEmail;
+        if (_userRepository.ExistsByEmail(command.Email)) return Errors.User.DuplicateEmail;
 
 
         // Create user and save in DB
