@@ -10,12 +10,12 @@ namespace DinnerPlanner.Api.Controllers;
 
 [ApiController]
 [Route("")]
-public abstract class ApiController : ControllerBase
+public abstract class ApiControllerBase : ControllerBase
 {
     protected readonly IMapper Mapper;
     protected readonly ISender Sender;
 
-    protected ApiController(ISender sender, IMapper mapper)
+    protected ApiControllerBase(ISender sender, IMapper mapper)
     {
         Sender = sender;
         Mapper = mapper;

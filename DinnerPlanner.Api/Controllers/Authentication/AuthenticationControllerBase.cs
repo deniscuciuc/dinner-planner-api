@@ -10,9 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace DinnerPlanner.Api.Controllers.Authentication;
 
 [Route("auth")]
-public class AuthenticationController : ApiController
+public class AuthenticationControllerBase : ApiControllerBase
 {
-    public AuthenticationController(ISender sender, IMapper mapper) : base(sender, mapper)
+    public AuthenticationControllerBase(ISender sender, IMapper mapper) : base(sender, mapper)
     {
     }
 
