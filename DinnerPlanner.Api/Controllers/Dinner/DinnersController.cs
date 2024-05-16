@@ -1,17 +1,19 @@
 ﻿using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DinnerPlanner.Api.Controllers.Dinner;
 
 [Route("dinners")]
-public class DinnersControllerBase : ApiControllerBase
+public class DinnersController : ApiControllerBase
 {
-    public DinnersControllerBase(ISender sender, IMapper mapper) : base(sender, mapper)
+    public DinnersController(ISender sender, IMapper mapper) : base(sender, mapper)
     {
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public IActionResult ListDinners()
     {
         return Ok(Array.Empty<string>());
